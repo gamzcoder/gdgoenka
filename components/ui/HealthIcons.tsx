@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import {
   Stethoscope,
   FlaskConical,
@@ -115,6 +116,7 @@ export interface HealthIconProps {
   label?: string;
   animated?: boolean;
   className?: string;
+  style?: CSSProperties;
 }
 
 export function HealthIcon({
@@ -126,6 +128,7 @@ export function HealthIcon({
   label,
   animated = false,
   className,
+  style,
 }: HealthIconProps) {
   const IconComponent = iconMap[name];
   const iconSize = sizes[size];
@@ -158,7 +161,7 @@ export function HealthIcon({
     const adjustedIconColor = isFilledBg ? "#ffffff" : iconColor;
 
     return (
-      <div className={cn("flex flex-col items-center gap-2", className)}>
+      <div className={cn("flex flex-col items-center gap-2", className)} style={style}>
         <div
           className={cn(
             "flex items-center justify-center rounded-xl transition-all duration-300",
@@ -186,7 +189,7 @@ export function HealthIcon({
   }
 
   return (
-    <div className={cn("inline-flex flex-col items-center gap-1", className)}>
+    <div className={cn("inline-flex flex-col items-center gap-1", className)} style={style}>
       <IconComponent
         size={iconSize}
         style={{ color: iconColor }}
