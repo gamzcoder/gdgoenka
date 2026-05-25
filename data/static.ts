@@ -14,31 +14,37 @@ export const whyUsItems = [
     title: "30+ Years of Excellence",
     description:
       "A legacy of quality education producing confident healthcare professionals across India.",
+    icon: "award" as const,
   },
   {
     title: "World-Class Labs",
     description:
       "Hands-on practical training with modern equipment in MLT, radiology, and OT simulation labs.",
+    icon: "flask" as const,
   },
   {
     title: "Expert Faculty",
     description:
       "Learn from experienced academicians and visiting clinicians from leading hospitals.",
+    icon: "users" as const,
   },
   {
     title: "99% Placement Rate",
     description:
       "A dedicated placement ecosystem with strong hospital tie-ups for job-ready graduates.",
+    icon: "trending-up" as const,
   },
   {
     title: "100+ Academies PAN India",
     description:
       "Benefit from a nationwide learning ecosystem, opportunities, and institutional support.",
+    icon: "globe" as const,
   },
   {
     title: "Recognized Certifications",
     description:
       "Programs aligned with trusted healthcare and academic bodies for strong career outcomes.",
+    icon: "shield-check" as const,
   },
 ];
 

@@ -1,14 +1,19 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
+import Image from "next/image";
 import LeadForm from "@/components/ui/LeadForm";
+import { CircularStatBadge } from "@/components/ui/CircularStatBadge";
+import { FloatingStatCard } from "@/components/ui/FloatingStatCard";
 import { fadeIn, fadeUp, slideInRight, staggerContainer, staggerItem } from "@/lib/animations";
 import { useCountUp } from "@/hooks/useCountUp";
+import { TrendingUp, Users } from "lucide-react";
 import type { Course } from "@/lib/types";
-import { HealthIcon } from "@/components/ui/HealthIcons";
 
-interface HeroProps {
+interface HeroWithPhotoProps {
   courses: Course[];
+  imageUrl?: string;
+  placementRate?: number;
 }
 
 function Stat({ value, suffix, label }: { value: number; suffix?: string; label: string }) {
@@ -25,33 +30,86 @@ function Stat({ value, suffix, label }: { value: number; suffix?: string; label:
   );
 }
 
-export default function Hero({ courses }: HeroProps) {
+export function HeroWithPhoto({
+  courses,
+  imageUrl,
+  placementRate = 99,
+}: HeroWithPhotoProps) {
   const reduceMotion = useReducedMotion();
+  const hasImage = Boolean(imageUrl);
 
   return (
     <section className="relative flex min-h-[100svh] items-center overflow-hidden px-4 py-12 md:px-8 md:py-16">
+      {/* Background layer */}
       <div className="absolute inset-0 bg-[var(--navy-deeper)]" />
-      <div className="hero-gradshift absolute inset-0 bg-[radial-gradient(circle_at_20%_24%,rgba(223,192,126,0.25),transparent_45%),radial-gradient(circle_at_82%_18%,rgba(30,79,160,0.42),transparent_45%),linear-gradient(130deg,var(--navy-deeper),var(--navy-dark),var(--navy))]" />
-      <div className="pointer-events-none absolute inset-0 opacity-10 [background-image:radial-gradient(rgba(255,255,255,0.9)_1px,transparent_1px)] [background-size:24px_24px]" />
+      
+      {/* Photo background (if provided) */}
+      {hasImage && imageUrl ? (
+        <>
+          <Image
+            src={imageUrl}
+            alt="Healthcare professionals"
+            fill
+            className="object-cover"
+            priority
+          />
+          {/* Gradient overlay for text readability */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background: `linear-gradient(
+                105deg,
+                rgba(9,29,71,0.92) 0%,
+                rgba(9,29,71,0.75) 45%,
+                rgba(9,29,71,0.40) 65%,
+                rgba(9,29,71,0.20) 100%
+              )`,
+            }}
+          />
+        </>
+      ) : (
+        // Fallback animated gradient
+        <>
+          <div className="hero-gradshift absolute inset-0 bg-[radial-gradient(circle_at_20%_24%,rgba(223,192,126,0.25),transparent_45%),radial-gradient(circle_at_82%_18%,rgba(30,79,160,0.42),transparent_45%),linear-gradient(130deg,var(--navy-deeper),var(--navy-dark),var(--navy))]" />
+          <div className="pointer-events-none absolute inset-0 opacity-10 [background-image:radial-gradient(rgba(255,255,255,0.9)_1px,transparent_1px)] [background-size:24px_24px]" />
+        </>
+      )}
+      
+      {/* Decorative elements */}
       <div className="pointer-events-none absolute -right-24 top-[16%] h-[420px] w-[420px] rounded-full border border-white/10 opacity-35" />
-      <div className="pointer-events-none absolute -right-12 top-[22%] h-[340px] w-[340px] text-[320px] leading-none text-white/5">✚</div>
+      <div className="pointer-events-none absolute -right-12 top-[22%] h-[340px] w-[340px] text-[320px] leading-none text-white/5">+</div>
 
-      {/* Background Healthcare Icons */}
-      <div className="pointer-events-none absolute left-[5%] top-[15%] opacity-[0.07]">
-        <HealthIcon name="dna" size="xl" className="animate-spin-slow text-white" />
+      {/* Floating stat cards - left side */}
+      <div className="absolute left-4 top-1/3 z-20 hidden flex-col gap-4 lg:flex">
+        <FloatingStatCard
+          label="Student"
+          value="99%"
+          subLabel="Placement"
+          icon={<TrendingUp size={16} />}
+          position="left"
+          delay={0.8}
+        />
+        <FloatingStatCard
+          label="Faculty"
+          value="98%"
+          subLabel="Rating"
+          icon={<Users size={16} />}
+          position="left"
+          delay={1}
+        />
       </div>
-      <div className="pointer-events-none absolute left-[12%] bottom-[20%] opacity-[0.05]">
-        <HealthIcon name="stethoscope" size="lg" className="text-[var(--gold-light)]" />
-      </div>
-      <div className="pointer-events-none absolute right-[8%] bottom-[25%] opacity-[0.06]">
-        <HealthIcon name="dna" size="lg" className="animate-spin-slow text-white" style={{ animationDirection: "reverse" }} />
-      </div>
-      <div className="pointer-events-none absolute left-[25%] top-[8%] opacity-[0.04]">
-        <HealthIcon name="stethoscope" size="md" className="text-white" />
-      </div>
-      <div className="pointer-events-none absolute right-[35%] top-[12%] hidden opacity-[0.05] lg:block">
-        <HealthIcon name="heart-pulse" size="md" className="animate-heartbeat text-[var(--gold-light)]" />
-      </div>
+
+      {/* Circular stat badge - right side over photo */}
+      {hasImage && (
+        <div className="absolute right-[20%] top-1/2 z-20 hidden -translate-y-1/2 lg:block">
+          <CircularStatBadge
+            value={placementRate}
+            suffix="%"
+            label="Placement"
+            size={130}
+          />
+        </div>
+      )}
 
       <motion.div
         initial="hidden"
@@ -76,9 +134,9 @@ export default function Hero({ courses }: HeroProps) {
 
           <motion.div variants={staggerContainer} className="mt-8 flex flex-wrap gap-3">
             <motion.a href="#courses" variants={staggerItem} className="rounded-lg bg-gradient-to-r from-[var(--gold)] to-[var(--gold-light)] px-6 py-3 text-sm font-bold text-[var(--navy-deeper)]">
-              Explore Courses →
+              Explore Courses
             </motion.a>
-            <motion.a href="#placements" variants={staggerItem} className="rounded-lg border border-white/25 bg-white/10 px-6 py-3 text-sm font-semibold text-white">
+            <motion.a href="#placements" variants={staggerItem} className="rounded-lg border border-white/25 bg-white/10 px-6 py-3 text-sm font-semibold text-white backdrop-blur-sm">
               View Placements
             </motion.a>
           </motion.div>
@@ -121,9 +179,9 @@ export default function Hero({ courses }: HeroProps) {
           <p className="mb-4 mt-1 text-sm text-[var(--text-muted)]">Our advisors will call you back within 24 hours.</p>
           <LeadForm courses={courses} source="Hero Form" submitLabel="Apply For Counselling" />
           <div className="mt-4 grid grid-cols-1 gap-2 text-[11px] text-[var(--text-muted)] sm:grid-cols-3">
-            <p className="rounded-md bg-[var(--gold-pale)] px-2 py-1 text-center">🔒 Confidential</p>
-            <p className="rounded-md bg-[var(--gold-pale)] px-2 py-1 text-center">✓ Call back in 24hrs</p>
-            <p className="rounded-md bg-[var(--gold-pale)] px-2 py-1 text-center">✓ No spam calls</p>
+            <p className="rounded-md bg-[var(--gold-pale)] px-2 py-1 text-center">Confidential</p>
+            <p className="rounded-md bg-[var(--gold-pale)] px-2 py-1 text-center">Call back in 24hrs</p>
+            <p className="rounded-md bg-[var(--gold-pale)] px-2 py-1 text-center">No spam calls</p>
           </div>
         </motion.aside>
       </motion.div>
@@ -132,3 +190,5 @@ export default function Hero({ courses }: HeroProps) {
     </section>
   );
 }
+
+export default HeroWithPhoto;

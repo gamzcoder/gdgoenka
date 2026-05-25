@@ -2,7 +2,9 @@
 
 import { motion } from "framer-motion";
 import SectionHeader from "@/components/ui/SectionHeader";
+import { HealthIcon, facilityIconMap, type HealthIconName } from "@/components/ui/HealthIcons";
 import { facilities } from "@/data/static";
+import { cn } from "@/lib/utils";
 
 const gradients = [
   "from-[var(--navy)] to-[var(--navy-light)]",
@@ -12,6 +14,13 @@ const gradients = [
   "from-[var(--navy-deeper)] to-[var(--navy)]",
   "from-[var(--gold)] to-[var(--gold-light)]",
 ];
+
+// Get animation class for specific facilities
+function getAnimationClass(title: string): string {
+  if (title.includes("Radiology")) return "animate-spin-slow";
+  if (title.includes("Physiotherapy")) return "animate-pulse";
+  return "";
+}
 
 export default function Facilities() {
   const [feature, ...rest] = facilities;
@@ -37,6 +46,19 @@ export default function Facilities() {
             <div className="relative min-h-[240px] overflow-hidden bg-gradient-to-br from-[var(--navy-deeper)] to-[var(--navy-light)]">
               <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,rgba(255,255,255,0.05)_0px,rgba(255,255,255,0.05)_1px,transparent_1px,transparent_12px)] transition duration-700 group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-t from-[rgba(9,29,71,0.6)] to-transparent" />
+              
+              {/* Featured facility icon */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="drop-shadow-[0_4px_8px_rgba(0,0,0,0.2)]">
+                  <HealthIcon
+                    name="microscope"
+                    size="xl"
+                    variant="white"
+                    className="scale-150"
+                  />
+                </div>
+              </div>
+              
               <span className="absolute right-4 top-4 rounded-full bg-[var(--gold)] px-2 py-1 text-xs font-semibold text-[var(--navy-deeper)]">Featured</span>
             </div>
             <div className="border-l-4 border-[var(--gold)] p-6 md:p-8">
@@ -47,26 +69,45 @@ export default function Facilities() {
         ) : null}
 
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {rest.map((facility, index) => (
-            <motion.article
-              key={facility.title}
-              initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20, y: 16 }}
-              whileInView={{ opacity: 1, x: 0, y: 0 }}
-              viewport={{ once: true, amount: 0.15 }}
-              transition={{ duration: 0.42, delay: index * 0.06 }}
-              className="group overflow-hidden rounded-2xl border border-[var(--border-navy)] bg-white"
-            >
-              <div className={`relative h-36 overflow-hidden bg-gradient-to-br ${gradients[index % gradients.length]}`}>
-                <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,rgba(255,255,255,0.05)_0px,rgba(255,255,255,0.05)_1px,transparent_1px,transparent_12px)] transition duration-[900ms] group-hover:scale-105 group-hover:translate-x-[2%] group-hover:translate-y-[1%]" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[rgba(9,29,71,0.65)] to-transparent transition group-hover:from-[rgba(9,29,71,0.82)]" />
-                <span className="absolute right-3 top-3 text-xl text-[var(--gold-light)]">✚</span>
-              </div>
-              <div className="p-5">
-                <h3 className="font-heading text-2xl text-[var(--navy-dark)]">{facility.title}</h3>
-                <p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">{facility.description}</p>
-              </div>
-            </motion.article>
-          ))}
+          {rest.map((facility, index) => {
+            const iconName = facilityIconMap[facility.title] as HealthIconName | undefined;
+            const animationClass = getAnimationClass(facility.title);
+
+            return (
+              <motion.article
+                key={facility.title}
+                initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20, y: 16 }}
+                whileInView={{ opacity: 1, x: 0, y: 0 }}
+                viewport={{ once: true, amount: 0.15 }}
+                transition={{ duration: 0.42, delay: index * 0.06 }}
+                className="group overflow-hidden rounded-2xl border border-[var(--border-navy)] bg-white"
+              >
+                <div className={`relative h-36 overflow-hidden bg-gradient-to-br ${gradients[index % gradients.length]}`}>
+                  <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,rgba(255,255,255,0.05)_0px,rgba(255,255,255,0.05)_1px,transparent_1px,transparent_12px)] transition duration-[900ms] group-hover:scale-105 group-hover:translate-x-[2%] group-hover:translate-y-[1%]" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[rgba(9,29,71,0.65)] to-transparent transition group-hover:from-[rgba(9,29,71,0.82)]" />
+                  
+                  {/* Facility icon */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className={cn("drop-shadow-[0_4px_8px_rgba(0,0,0,0.2)]", animationClass)}>
+                      {iconName ? (
+                        <HealthIcon
+                          name={iconName}
+                          size="xl"
+                          variant="white"
+                        />
+                      ) : (
+                        <span className="text-xl text-[var(--gold-light)]">+</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="p-5">
+                  <h3 className="font-heading text-2xl text-[var(--navy-dark)]">{facility.title}</h3>
+                  <p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">{facility.description}</p>
+                </div>
+              </motion.article>
+            );
+          })}
         </div>
       </div>
     </section>

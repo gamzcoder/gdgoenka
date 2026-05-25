@@ -1,4 +1,5 @@
 import type { Course } from "@/lib/types";
+import { HealthIcon, courseIconMap, type HealthIconName } from "@/components/ui/HealthIcons";
 
 interface CourseCardProps {
   course: Course;
@@ -14,17 +15,42 @@ const gradients = [
   "from-[var(--gold)] to-[var(--gold-light)]",
 ];
 
+// Get icon name for a course based on its name or type
+function getCourseIcon(course: Course): HealthIconName {
+  // Check if course name matches any key in courseIconMap
+  for (const [key, iconName] of Object.entries(courseIconMap)) {
+    if (course.name.includes(key) || course.category?.includes(key)) {
+      return iconName;
+    }
+  }
+  // Fallback based on course type
+  return courseIconMap[course.type] || "graduation-cap";
+}
+
 export default function CourseCard({ course, index }: CourseCardProps) {
+  const iconName = getCourseIcon(course);
+
   return (
     <article className="course-flip h-[320px]">
       <div className="course-flip-inner relative h-full">
         <div className="course-face absolute inset-0 overflow-hidden rounded-2xl border border-[var(--border-navy)] bg-white">
           <div className={`relative flex h-36 items-center justify-center bg-gradient-to-br ${gradients[index % gradients.length]}`}>
-            <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,rgba(255,255,255,0.06)_0px,rgba(255,255,255,0.06)_1px,transparent_1px,transparent_11px)]" />
-            <span className="absolute left-3 top-3 rounded-full bg-white/85 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--navy-deeper)]">
+            {/* Diagonal stripe overlay */}
+            <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,rgba(255,255,255,0.04)_0px,rgba(255,255,255,0.04)_1px,transparent_1px,transparent_11px)]" />
+            
+            {/* Course type badge */}
+            <span className="absolute left-3 top-3 flex items-center gap-1.5 rounded-full bg-white/85 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--navy-deeper)]">
               {course.type}
             </span>
-            <span className="relative text-4xl text-white/45">✚</span>
+            
+            {/* Center icon */}
+            <div className="relative z-10 drop-shadow-[0_4px_8px_rgba(0,0,0,0.2)]">
+              <HealthIcon
+                name={iconName}
+                size="xl"
+                variant="white"
+              />
+            </div>
           </div>
           <div className="space-y-3 p-5">
             <h3 className="font-heading text-2xl leading-7 text-[var(--navy-dark)]">{course.name}</h3>
@@ -44,7 +70,7 @@ export default function CourseCard({ course, index }: CourseCardProps) {
           <div className="mt-5 flex items-center justify-between">
             <span className="rounded-full border border-white/20 px-3 py-1 text-xs text-white/80">{course.duration}</span>
             <a href="#contact" className="rounded-lg bg-gradient-to-r from-[var(--gold)] to-[var(--gold-light)] px-4 py-2 text-sm font-semibold text-[var(--navy-deeper)]">
-              Apply Now →
+              Apply Now
             </a>
           </div>
         </div>
