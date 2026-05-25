@@ -24,6 +24,9 @@ function getAnimationClass(title: string): string {
 
 export default function Facilities() {
   const [feature, ...rest] = facilities;
+  const featureIconName = feature
+    ? (facilityIconMap[feature.title] as HealthIconName | undefined)
+    : undefined;
 
   return (
     <section className="bg-[var(--off-white)] px-4 py-14 md:px-8 md:py-20">
@@ -50,12 +53,14 @@ export default function Facilities() {
               {/* Featured facility icon */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="drop-shadow-[0_4px_8px_rgba(0,0,0,0.2)]">
-                  <HealthIcon
-                    name="microscope"
-                    size="xl"
-                    variant="white"
-                    className="scale-150"
-                  />
+                  {featureIconName ? (
+                    <HealthIcon
+                      name={featureIconName}
+                      size="xl"
+                      variant="white"
+                      className="scale-150"
+                    />
+                  ) : null}
                 </div>
               </div>
               

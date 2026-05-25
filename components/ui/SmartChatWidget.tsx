@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { MessageCircle, X, Minus, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -24,6 +24,45 @@ export function SmartChatWidget({
   const [phone, setPhone] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen || !panelRef.current) return;
+
+    const panel = panelRef.current;
+    const selectors = [
+      "button:not([disabled])",
+      "a[href]",
+      "input:not([disabled])",
+      "select:not([disabled])",
+      "textarea:not([disabled])",
+      "[tabindex]:not([tabindex='-1'])",
+    ];
+    const focusable = Array.from(panel.querySelectorAll<HTMLElement>(selectors.join(",")));
+    focusable[0]?.focus();
+
+    const handleKeydown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+        return;
+      }
+
+      if (event.key !== "Tab" || focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeydown);
+    return () => document.removeEventListener("keydown", handleKeydown);
+  }, [isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,7 +112,7 @@ export function SmartChatWidget({
             <MessageCircle size={22} />
             
             {/* Pulse ring animation */}
-            <span className="absolute inset-0 animate-ping rounded-full bg-[var(--gold)] opacity-30" />
+            <span className="absolute inset-0 animate-pulse-ring rounded-full bg-[var(--gold)] opacity-30" style={{ animationDuration: "3s" }} />
             
             {/* Chat label */}
             <span className="absolute -top-1 right-0 rounded-full bg-[var(--navy)] px-2 py-0.5 text-[10px] font-semibold text-white">
@@ -92,6 +131,8 @@ export function SmartChatWidget({
             style={{ boxShadow: "0 20px 60px rgba(18,56,132,0.2)" }}
             role="dialog"
             aria-label="Chat with counsellor"
+            aria-modal="true"
+            ref={panelRef}
           >
             {/* Header */}
             <div className="flex items-center justify-between bg-[var(--navy-deeper)] px-4 py-3">
@@ -206,7 +247,7 @@ export function SmartChatWidget({
                       </form>
                     ) : (
                       <div className="mt-4 rounded-lg bg-green-50 p-3 text-center text-sm text-green-700">
-                        {"We'll call you back shortly!"}
+                        {"✓ We'll call you back shortly!"}
                       </div>
                     )}
                   </motion.div>
@@ -219,8 +260,7 @@ export function SmartChatWidget({
                     transition={{ duration: 0.15 }}
                   >
                     <QuickCareerQuiz
-                      onComplete={(course) => {
-                        console.log("Quiz completed with course:", course);
+                      onComplete={() => {
                         setActiveTab("chat");
                       }}
                     />

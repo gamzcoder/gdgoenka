@@ -59,7 +59,10 @@ function getRecommendation(state: QuizState): { course: string; duration: string
   }
   
   if (interest === "physio") {
-    if (duration === "3years" || duration === "2years") {
+    if (duration === "3years") {
+      return { course: "B.Sc OT Technology", duration: "3 years", placement: "97%" };
+    }
+    if (duration === "2years") {
       return { course: "Diploma in Physiotherapy", duration: "2 years", placement: "97%" };
     }
     return { course: "Certificate in Rehab Assistance", duration: "6 months", placement: "92%" };

@@ -5,6 +5,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { navLinks } from "@/data/static";
 import { staggerContainer, staggerItem } from "@/lib/animations";
+import { MegaMenu, MegaMenuMobile } from "@/components/layout/MegaMenu";
 
 const phone = process.env.NEXT_PUBLIC_PHONE ?? "+918929883260";
 
@@ -41,12 +42,16 @@ export default function Header() {
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex">
-          {navLinks.map((link) => (
-            <Link key={link.label} href={link.href} className="group relative rounded-md px-3 py-2 text-sm font-medium text-[var(--text-muted)] transition hover:text-[var(--navy)]">
-              {link.label}
-              <span className="absolute bottom-0 left-3 h-[2px] w-0 bg-[var(--gold)] transition-all duration-300 group-hover:w-[calc(100%-24px)]" />
-            </Link>
-          ))}
+          {navLinks.map((link) =>
+            link.label === "Courses" ? (
+              <MegaMenu key={link.label} triggerLabel={link.label} />
+            ) : (
+              <Link key={link.label} href={link.href} className="group relative rounded-md px-3 py-2 text-sm font-medium text-[var(--text-muted)] transition hover:text-[var(--navy)]">
+                {link.label}
+                <span className="absolute bottom-0 left-3 h-[2px] w-0 bg-[var(--gold)] transition-all duration-300 group-hover:w-[calc(100%-24px)]" />
+              </Link>
+            )
+          )}
         </nav>
 
         <div className="hidden items-center gap-2 lg:flex">
@@ -112,7 +117,10 @@ export default function Header() {
               </div>
 
               <motion.nav className="flex flex-1 flex-col gap-1" variants={staggerContainer} initial="hidden" animate="visible">
-                {navLinks.map((link) => (
+                <motion.div variants={staggerItem}>
+                  <MegaMenuMobile onItemClick={() => setOpen(false)} className="mb-2 border-b border-[var(--border-navy)] pb-3" />
+                </motion.div>
+                {navLinks.filter((link) => link.label !== "Courses").map((link) => (
                   <motion.div key={link.label} variants={staggerItem}>
                     <Link
                       href={link.href}

@@ -15,7 +15,7 @@ import {
   Bone,
   Baby,
   Syringe,
-  ClipboardList,
+  ClipboardPlus,
   HeartPulse,
   Thermometer,
   Bandage,
@@ -39,9 +39,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Icon map - maps semantic names to Lucide icons
 const iconMap = {
-  // Healthcare courses
   stethoscope: Stethoscope,
   flask: FlaskConical,
   radiation: Radiation,
@@ -55,35 +53,28 @@ const iconMap = {
   bone: Bone,
   baby: Baby,
   syringe: Syringe,
-  clipboard: ClipboardList,
+  clipboard: ClipboardPlus,
   "heart-pulse": HeartPulse,
   thermometer: Thermometer,
   bandage: Bandage,
   hospital: Hospital,
-  // People & education
   user: UserRound,
   users: Users,
   "graduation-cap": GraduationCap,
   "book-open": BookOpen,
   award: Award,
-  // Location & building
   "map-pin": MapPin,
   building: Building2,
-  // Stats & trust
   "trending-up": TrendingUp,
   star: Star,
   "shield-check": ShieldCheck,
   globe: Globe,
   lightbulb: Lightbulb,
-  // Communication
   phone: PhoneCall,
   message: MessageCircle,
-  dna:Dna
+  dna: Dna,
 } as const;
 
-export type HealthIconName = keyof typeof iconMap;
-
-// Size map in pixels
 const sizes = {
   sm: 16,
   md: 22,
@@ -91,17 +82,13 @@ const sizes = {
   xl: 40,
 } as const;
 
-// Color map using CSS variables
 const colors = {
   navy: "var(--navy)",
-  "navy-deep": "var(--navy-deeper)",
-  black: "#000000",
   gold: "var(--gold)",
-  white: "#ffffff",
+  white: "var(--white)",
   muted: "var(--text-muted)",
 } as const;
 
-// Background color map
 const bgColors = {
   "navy-pale": "var(--navy-pale)",
   "gold-pale": "var(--gold-pale)",
@@ -109,12 +96,56 @@ const bgColors = {
   gold: "var(--gold)",
 } as const;
 
+export type HealthIconName = keyof typeof iconMap;
+export type HealthIconSize = keyof typeof sizes;
+export type HealthIconVariant = keyof typeof colors;
+export type HealthIconBgVariant = keyof typeof bgColors;
+
+export const iconCatalog: Record<
+  HealthIconName,
+  { icon: LucideIcon; label: string; variant: HealthIconVariant; size: HealthIconSize }
+> = {
+  stethoscope: { icon: Stethoscope, label: "General medicine", variant: "navy", size: "lg" },
+  flask: { icon: FlaskConical, label: "MLT", variant: "gold", size: "lg" },
+  radiation: { icon: Radiation, label: "Radiology", variant: "gold", size: "lg" },
+  scissors: { icon: Scissors, label: "OT Technology", variant: "gold", size: "lg" },
+  heart: { icon: Heart, label: "Nursing", variant: "gold", size: "lg" },
+  activity: { icon: Activity, label: "Physiotherapy", variant: "gold", size: "lg" },
+  microscope: { icon: Microscope, label: "Lab science", variant: "gold", size: "xl" },
+  pill: { icon: Pill, label: "Pharmacy", variant: "navy", size: "lg" },
+  brain: { icon: Brain, label: "Neurology", variant: "navy", size: "lg" },
+  eye: { icon: Eye, label: "Ophthalmology", variant: "navy", size: "lg" },
+  bone: { icon: Bone, label: "Orthopedics", variant: "navy", size: "lg" },
+  baby: { icon: Baby, label: "Pediatrics", variant: "navy", size: "lg" },
+  syringe: { icon: Syringe, label: "Vaccination", variant: "navy", size: "lg" },
+  clipboard: { icon: ClipboardPlus, label: "Patient records", variant: "gold", size: "lg" },
+  "heart-pulse": { icon: HeartPulse, label: "Cardiology", variant: "gold", size: "lg" },
+  thermometer: { icon: Thermometer, label: "Fever screening", variant: "navy", size: "lg" },
+  bandage: { icon: Bandage, label: "First aid", variant: "navy", size: "lg" },
+  hospital: { icon: Hospital, label: "Hospital placement", variant: "navy", size: "lg" },
+  user: { icon: UserRound, label: "Student", variant: "navy", size: "lg" },
+  users: { icon: Users, label: "Faculty", variant: "navy", size: "lg" },
+  "graduation-cap": { icon: GraduationCap, label: "Degree", variant: "navy", size: "lg" },
+  "book-open": { icon: BookOpen, label: "Diploma", variant: "navy", size: "lg" },
+  award: { icon: Award, label: "Certification", variant: "navy", size: "lg" },
+  "map-pin": { icon: MapPin, label: "Location", variant: "navy", size: "lg" },
+  building: { icon: Building2, label: "Campus", variant: "navy", size: "lg" },
+  "trending-up": { icon: TrendingUp, label: "Career growth", variant: "navy", size: "lg" },
+  star: { icon: Star, label: "Excellence", variant: "gold", size: "lg" },
+  "shield-check": { icon: ShieldCheck, label: "Accreditation", variant: "navy", size: "lg" },
+  globe: { icon: Globe, label: "PAN India", variant: "navy", size: "lg" },
+  lightbulb: { icon: Lightbulb, label: "Innovation", variant: "gold", size: "lg" },
+  phone: { icon: PhoneCall, label: "Phone", variant: "gold", size: "lg" },
+  message: { icon: MessageCircle, label: "Message", variant: "gold", size: "lg" },
+  dna: { icon: Dna, label: "Healthcare", variant: "white", size: "xl" },
+};
+
 export interface HealthIconProps {
   name: HealthIconName;
-  size?: keyof typeof sizes;
-  variant?: keyof typeof colors;
+  size?: HealthIconSize;
+  variant?: HealthIconVariant;
   withBackground?: boolean;
-  bgVariant?: keyof typeof bgColors;
+  bgVariant?: HealthIconBgVariant;
   label?: string;
   animated?: boolean;
   className?: string;
@@ -124,7 +155,7 @@ export interface HealthIconProps {
 export function HealthIcon({
   name,
   size = "md",
-  variant = "navy",
+  variant,
   withBackground = false,
   bgVariant = "navy-pale",
   label,
@@ -134,10 +165,9 @@ export function HealthIcon({
 }: HealthIconProps) {
   const IconComponent = iconMap[name];
   const iconSize = sizes[size];
-  const iconColor = colors[variant];
+  const iconColor = colors[variant ?? iconCatalog[name].variant ?? "navy"];
   const bgColor = bgColors[bgVariant];
 
-  // Determine animation class based on icon type
   const getAnimationClass = () => {
     if (!animated) return "";
     switch (name) {
@@ -159,54 +189,33 @@ export function HealthIcon({
 
   if (withBackground) {
     const bgSize = iconSize * 2;
-    const adjustedIconColor = bgVariant === "navy" ? "#ffffff" : iconColor;
+    const adjustedIconColor = bgVariant === "navy" || bgVariant === "gold" ? "var(--white)" : iconColor;
 
     return (
       <div className={cn("flex flex-col items-center gap-2", className)} style={style}>
         <div
-          className={cn(
-            "flex items-center justify-center rounded-xl transition-all duration-300",
-            animationClass
-          )}
+          className={cn("flex items-center justify-center rounded-xl transition-all duration-300", animationClass)}
           style={{
             width: bgSize,
             height: bgSize,
             backgroundColor: bgColor,
           }}
         >
-          <IconComponent
-            size={iconSize}
-            style={{ color: adjustedIconColor }}
-            strokeWidth={1.8}
-          />
+          <IconComponent size={iconSize} style={{ color: adjustedIconColor }} strokeWidth={1.8} />
         </div>
-        {label && (
-          <span className="text-xs font-medium text-[var(--text-muted)]">
-            {label}
-          </span>
-        )}
+        {label ? <span className="text-xs font-medium text-[var(--text-muted)]">{label}</span> : null}
       </div>
     );
   }
 
   return (
     <div className={cn("inline-flex flex-col items-center gap-1", className)} style={style}>
-      <IconComponent
-        size={iconSize}
-        style={{ color: iconColor }}
-        strokeWidth={1.8}
-        className={animationClass}
-      />
-      {label && (
-        <span className="text-xs font-medium text-[var(--text-muted)]">
-          {label}
-        </span>
-      )}
+      <IconComponent size={iconSize} style={{ color: iconColor }} strokeWidth={1.8} className={animationClass} />
+      {label ? <span className="text-xs font-medium text-[var(--text-muted)]">{label}</span> : null}
     </div>
   );
 }
 
-// Course icon mapping helper
 export const courseIconMap: Record<string, HealthIconName> = {
   "B.Sc Medical Lab Technology": "flask",
   "B.Sc Radiology": "radiation",
@@ -214,7 +223,6 @@ export const courseIconMap: Record<string, HealthIconName> = {
   "Diploma Nursing": "heart",
   "Diploma Physiotherapy": "activity",
   "Certificate Healthcare Mgmt": "clipboard",
-  // Generic mappings
   Degree: "graduation-cap",
   Diploma: "book-open",
   Certificate: "award",
@@ -225,17 +233,18 @@ export const courseIconMap: Record<string, HealthIconName> = {
   Physiotherapy: "activity",
 };
 
-// Facility icon mapping
 export const facilityIconMap: Record<string, HealthIconName> = {
   "Medical Laboratory": "microscope",
   "Radiology Unit": "radiation",
+  "Radiology & Imaging Unit": "radiation",
   "OT Simulation": "scissors",
+  "Operation Theatre Simulation": "scissors",
   "Smart Classrooms": "book-open",
   Library: "book-open",
+  "Library & Resource Centre": "book-open",
   "Physiotherapy Lab": "activity",
 };
 
-// Why Us icon mapping
 export const whyUsIconMap: Record<string, HealthIconName> = {
   "30+ Years of Excellence": "award",
   "World-Class Labs": "flask",
