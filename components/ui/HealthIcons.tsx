@@ -77,6 +77,7 @@ const iconMap = {
   // Communication
   phone: PhoneCall,
   message: MessageCircle,
+  dna:Dna
 } as const;
 
 export type HealthIconName = keyof typeof iconMap;
