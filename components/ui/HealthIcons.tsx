@@ -33,6 +33,7 @@ import {
   Lightbulb,
   PhoneCall,
   MessageCircle,
+  Dna
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
