@@ -37,20 +37,28 @@ export default function Hero({ courses }: HeroProps) {
       <div className="pointer-events-none absolute -right-12 top-[22%] h-[340px] w-[340px] text-[320px] leading-none text-white/5">✚</div>
 
       {/* Background Healthcare Icons */}
-      <div className="pointer-events-none absolute left-[5%] top-[15%] opacity-[0.07]">
-        <HealthIcon name="dna" size="xl" className="animate-spin-slow text-white" />
+      <div className="pointer-events-none absolute left-[5%] top-[15%] opacity-[0.06]">
+        <HealthIcon name="dna" size="xl" className="animate-spin-slow" withBackground variant="black" bgVariant="gold-pale" />
       </div>
-      <div className="pointer-events-none absolute left-[12%] bottom-[20%] opacity-[0.05]">
-        <HealthIcon name="stethoscope" size="lg" className="text-[var(--gold-light)]" />
+      <div className="pointer-events-none absolute left-[12%] bottom-[20%] opacity-[0.045]">
+        <HealthIcon name="stethoscope" size="lg" withBackground variant="black" bgVariant="gold" />
       </div>
-      <div className="pointer-events-none absolute right-[8%] bottom-[25%] opacity-[0.06]">
-        <HealthIcon name="dna" size="lg" className="animate-spin-slow text-white" style={{ animationDirection: "reverse" }} />
+      <div className="pointer-events-none absolute right-[8%] bottom-[25%] opacity-[0.055]">
+        <HealthIcon
+          name="dna"
+          size="lg"
+          className="animate-spin-slow"
+          withBackground
+          variant="black"
+          bgVariant="gold-pale"
+          style={{ animationDirection: "reverse" }}
+        />
       </div>
       <div className="pointer-events-none absolute left-[25%] top-[8%] opacity-[0.04]">
-        <HealthIcon name="stethoscope" size="md" className="text-white" />
+        <HealthIcon name="stethoscope" size="md" withBackground variant="black" bgVariant="gold" />
       </div>
       <div className="pointer-events-none absolute right-[35%] top-[12%] hidden opacity-[0.05] lg:block">
-        <HealthIcon name="heart-pulse" size="md" className="animate-heartbeat text-[var(--gold-light)]" />
+        <HealthIcon name="heart-pulse" size="md" className="animate-heartbeat" withBackground variant="black" bgVariant="gold-pale" />
       </div>
 
       <motion.div

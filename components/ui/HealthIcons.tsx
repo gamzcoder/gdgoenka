@@ -94,6 +94,8 @@ const sizes = {
 // Color map using CSS variables
 const colors = {
   navy: "var(--navy)",
+  "navy-deep": "var(--navy-deeper)",
+  black: "#000000",
   gold: "var(--gold)",
   white: "#ffffff",
   muted: "var(--text-muted)",
@@ -157,8 +159,7 @@ export function HealthIcon({
 
   if (withBackground) {
     const bgSize = iconSize * 2;
-    const isFilledBg = bgVariant === "navy" || bgVariant === "gold";
-    const adjustedIconColor = isFilledBg ? "#ffffff" : iconColor;
+    const adjustedIconColor = bgVariant === "navy" ? "#ffffff" : iconColor;
 
     return (
       <div className={cn("flex flex-col items-center gap-2", className)} style={style}>
