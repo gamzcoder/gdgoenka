@@ -5,6 +5,7 @@ import Image from "next/image";
 import LeadForm from "@/components/ui/LeadForm";
 import { CircularStatBadge } from "@/components/ui/CircularStatBadge";
 import { FloatingStatCard } from "@/components/ui/FloatingStatCard";
+import { CubeCarousel } from "@/components/sections/Hero";
 import { fadeIn, fadeUp, slideInRight, staggerContainer, staggerItem } from "@/lib/animations";
 import { useCountUp } from "@/hooks/useCountUp";
 import { TrendingUp, Users } from "lucide-react";
@@ -80,7 +81,7 @@ export function HeroWithPhoto({
       <div className="pointer-events-none absolute -right-12 top-[22%] h-[340px] w-[340px] text-[320px] leading-none text-white/5">+</div>
 
       {/* Floating stat cards - left side */}
-      <div className="absolute left-4 top-1/3 z-20 hidden flex-col gap-4 lg:flex">
+      {/* <div className="absolute left-4 top-1/3 z-20 hidden flex-col gap-4 lg:flex">
         <FloatingStatCard
           label="Student"
           value="99%"
@@ -97,11 +98,11 @@ export function HeroWithPhoto({
           position="left"
           delay={1}
         />
-      </div>
+      </div> */}
 
       {/* Circular stat badge - right side over photo */}
       {hasImage && (
-        <div className="absolute right-[20%] top-1/2 z-20 hidden -translate-y-1/2 lg:block">
+        <div className="pointer-events-none absolute right-[20%] top-1/2 z-[5] hidden -translate-y-1/2 lg:block">
           <CircularStatBadge
             value={placementRate}
             suffix="%"
@@ -167,23 +168,27 @@ export function HeroWithPhoto({
           </motion.div>
         </div>
 
-        <motion.aside
+        <motion.div
           variants={slideInRight}
           transition={{ delay: 0.3 }}
-          className="relative rounded-[20px] bg-[var(--surface)] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.22)]"
+          className="flex flex-col items-center gap-5 lg:items-end"
         >
-          <div className="absolute -top-3 right-4 rounded-full border border-[var(--border-gold)] bg-[var(--gold-glow)] px-3 py-1 text-[11px] font-semibold text-[var(--navy-dark)] [animation:bob_3s_ease-in-out_infinite]">
-            Next batch starts: July 2026
-          </div>
-          <h2 className="font-heading text-3xl text-[var(--navy-dark)]">Get Free Counselling</h2>
-          <p className="mb-4 mt-1 text-sm text-[var(--text-muted)]">Our advisors will call you back within 24 hours.</p>
-          <LeadForm courses={courses} source="Hero Form" submitLabel="Apply For Counselling" />
-          <div className="mt-4 grid grid-cols-1 gap-2 text-[11px] text-[var(--text-muted)] sm:grid-cols-3">
-            <p className="rounded-md bg-[var(--gold-pale)] px-2 py-1 text-center">Confidential</p>
-            <p className="rounded-md bg-[var(--gold-pale)] px-2 py-1 text-center">Call back in 24hrs</p>
-            <p className="rounded-md bg-[var(--gold-pale)] px-2 py-1 text-center">No spam calls</p>
-          </div>
-        </motion.aside>
+          <CubeCarousel />
+
+          <aside className="relative w-full rounded-[20px] bg-[var(--surface)] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.22)]">
+            {/* <div className="absolute -top-3 right-4 rounded-full border border-[var(--border-gold)] bg-[var(--gold-glow)] px-3 py-1 text-[11px] font-semibold text-[var(--navy-dark)] [animation:bob_3s_ease-in-out_infinite]">
+              Next batch starts: July 2026
+            </div> */}
+            <h2 className="font-heading text-3xl text-[var(--navy-dark)]">Get Free Counselling</h2>
+            <p className="mb-4 mt-1 text-sm text-[var(--text-muted)]">Our advisors will call you back within 24 hours.</p>
+            <LeadForm courses={courses} source="Hero Form" submitLabel="Apply For Counselling" />
+            <div className="mt-4 grid grid-cols-1 gap-2 text-[11px] text-[var(--text-muted)] sm:grid-cols-3">
+              <p className="rounded-md bg-[var(--gold-pale)] px-2 py-1 text-center">Confidential</p>
+              <p className="rounded-md bg-[var(--gold-pale)] px-2 py-1 text-center">Call back in 24hrs</p>
+              <p className="rounded-md bg-[var(--gold-pale)] px-2 py-1 text-center">No spam calls</p>
+            </div>
+          </aside>
+        </motion.div>
       </motion.div>
 
       {!reduceMotion ? <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[rgba(9,29,71,0.5)] to-transparent" /> : null}

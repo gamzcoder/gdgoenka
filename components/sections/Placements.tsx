@@ -1,16 +1,191 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import SectionHeader from "@/components/ui/SectionHeader";
 import { useCountUp } from "@/hooks/useCountUp";
 import { useScrollReveal } from "@/hooks/useInView";
 import type { Placement } from "@/lib/types";
-
 interface PlacementsProps {
   placements: Placement[];
 }
+type BoardItem = {
+  type: "placement" | "news" | "update" | "event";
+  text: string;
+};
 
+interface Props {
+  items: BoardItem[];
+}
+
+const dotColors: Record<BoardItem["type"], string> = {
+  placement: "#22c55e",
+  news:      "#eab308",
+  update:    "#3b82f6",
+  event:     "#a855f7",
+};
+
+function FlipCard({ item, flipping, nextItem }: {
+  item: BoardItem;
+  flipping: boolean;
+  nextItem: BoardItem | null;
+}) {
+  const [phase, setPhase] = useState<"idle" | "top-up" | "fall-down">("idle");
+  const [displayedItem, setDisplayedItem] = useState(item);
+  const [incomingItem, setIncomingItem] = useState<BoardItem | null>(null);
+
+  useEffect(() => {
+    if (!flipping || !nextItem) return;
+
+    setIncomingItem(nextItem);
+    setPhase("top-up");
+
+    const t1 = setTimeout(() => {
+      setPhase("fall-down");
+    }, 280);
+
+    const t2 = setTimeout(() => {
+      setDisplayedItem(nextItem);
+      setIncomingItem(null);
+      setPhase("idle");
+    }, 620);
+
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [flipping, nextItem]);
+
+  const active = incomingItem ?? displayedItem;
+  const oldColor = dotColors[displayedItem.type];
+  const newColor = dotColors[(incomingItem ?? displayedItem).type];
+
+  return (
+    <div className="relative h-32 overflow-hidden rounded-xl border border-[var(--gold)]/20"
+         style={{ perspective: "1000px", background: "linear-gradient(180deg,rgba(255,255,255,0.10) 0%,rgba(255,255,255,0.05) 100%)" }}>
+
+      {/* Static bottom half — always shows new content */}
+      <div className="absolute bottom-0 left-0 right-0 overflow-hidden rounded-b-xl"
+           style={{ top: "50%", height: "50%" }}>
+        <div className="absolute bottom-0 left-0 right-0 p-3.5"
+             style={{ height: "200%", background: "linear-gradient(180deg,rgba(255,255,255,0.10) 0%,rgba(255,255,255,0.05) 100%)", borderRadius: "inherit" }}>
+          <Badge color={phase === "idle" ? oldColor : newColor} type={active.type} />
+          <p className="line-clamp-3 text-sm leading-relaxed text-white">{active.text}</p>
+        </div>
+      </div>
+
+      {/* Top half — flips up to reveal new content on the back */}
+      <div className="absolute left-0 right-0 overflow-hidden rounded-t-xl"
+           style={{
+             top: 0, height: "50%",
+             transformOrigin: "bottom center",
+             transformStyle: "preserve-3d",
+             transform: phase === "top-up" ? "rotateX(-90deg)" : "rotateX(0deg)",
+             transition: phase === "top-up" ? "transform 0.28s cubic-bezier(0.55,0,1,0.45)" : "none",
+             zIndex: 2,
+           }}>
+        {/* Front — old item */}
+        <div className="absolute left-0 right-0 p-3.5"
+             style={{ top: 0, height: "200%", backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden",
+                      background: "linear-gradient(180deg,rgba(255,255,255,0.10) 0%,rgba(255,255,255,0.05) 100%)", borderRadius: "12px" }}>
+          <Badge color={oldColor} type={displayedItem.type} />
+          <p className="line-clamp-3 text-sm leading-relaxed text-white">{displayedItem.text}</p>
+        </div>
+        {/* Back — new item (shown after flip) */}
+        <div className="absolute left-0 right-0 p-3.5"
+             style={{ top: 0, height: "200%", backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden",
+                      transform: "rotateX(180deg)",
+                      background: "linear-gradient(180deg,rgba(255,255,255,0.12) 0%,rgba(255,255,255,0.06) 100%)", borderRadius: "12px" }}>
+          <Badge color={newColor} type={active.type} />
+          <p className="line-clamp-3 text-sm leading-relaxed text-white">{active.text}</p>
+        </div>
+      </div>
+
+      {/* Falling half — old bottom dropping down */}
+      {phase !== "idle" && (
+        <div className="absolute left-0 right-0 overflow-hidden rounded-b-xl"
+             style={{
+               top: "50%", height: "50%",
+               transformOrigin: "top center",
+               transformStyle: "preserve-3d",
+               transform: phase === "fall-down" ? "rotateX(0deg)" : "rotateX(90deg)",
+               transition: phase === "fall-down" ? "transform 0.28s cubic-bezier(0,0.55,0.45,1)" : "none",
+               zIndex: 3,
+             }}>
+          <div className="absolute p-3.5"
+               style={{ bottom: 0, left: 0, right: 0, height: "200%",
+                        background: "linear-gradient(180deg,rgba(255,255,255,0.10) 0%,rgba(255,255,255,0.05) 100%)", borderRadius: "12px" }}>
+            <Badge color={oldColor} type={displayedItem.type} />
+            <p className="line-clamp-3 text-sm leading-relaxed text-white">{displayedItem.text}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Split line */}
+      <div className="pointer-events-none absolute left-0 right-0 top-1/2 z-10 h-px bg-black/30" />
+    </div>
+  );
+}
+
+function Badge({ color, type }: { color: string; type: string }) {
+  return (
+    <div className="mb-2.5 flex items-center gap-2">
+      <span className="h-2.5 w-2.5 flex-shrink-0 rounded-full" style={{ background: color }} />
+      <span className="text-[10px] uppercase tracking-[0.2em] text-white/55">{type}</span>
+    </div>
+  );
+}
+
+ function PlacementFlipBoard({ items }: Props) {
+  const VISIBLE = 6;
+  const [cards, setCards] = useState(items.slice(0, VISIBLE));
+  const [flipping, setFlipping] = useState<{ index: number; nextItem: BoardItem } | null>(null);
+  const nextIdxRef = useRef(VISIBLE);
+  const lastFlippedRef = useRef(-1);
+  const pausedRef = useRef(false);
+
+  useEffect(() => {
+    if (!items.length) return;
+
+    const interval = setInterval(() => {
+      if (pausedRef.current) return;
+
+      let pick: number;
+      do { pick = Math.floor(Math.random() * VISIBLE); } while (pick === lastFlippedRef.current);
+      lastFlippedRef.current = pick;
+
+      const nextItem = items[nextIdxRef.current % items.length];
+      nextIdxRef.current += 1;
+
+      setFlipping({ index: pick, nextItem });
+
+      setTimeout(() => {
+        setCards((prev) => {
+          const updated = [...prev];
+          updated[pick] = nextItem;
+          return updated;
+        });
+        setFlipping(null);
+      }, 650);
+    }, 2200);
+
+    return () => clearInterval(interval);
+  }, [items]);
+
+  return (
+    <div
+      className="grid gap-4 md:grid-cols-3"
+      onMouseEnter={() => { pausedRef.current = true; }}
+      onMouseLeave={() => { pausedRef.current = false; }}
+    >
+      {cards.map((card, i) => (
+        <FlipCard
+          key={i}
+          item={card}
+          flipping={flipping?.index === i}
+          nextItem={flipping?.index === i ? flipping.nextItem : null}
+        />
+      ))}
+    </div>
+  );
+}
 const stats = [
   { label: "Placement Rate", target: 99, suffix: "%" },
   { label: "Hospital Partners", target: 500, suffix: "+" },
@@ -159,7 +334,7 @@ export default function Placements({ placements }: PlacementsProps) {
     <section id="placements" ref={ref} className="relative overflow-hidden bg-[var(--navy-deeper)] px-4 py-14 md:px-8 md:py-20">
       <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden="true" />
 
-      <div className="relative z-10 mx-auto w-full max-w-6xl">
+      <div className="relative z-10 mx-auto w-full max-w-6xl" style={{ perspective: "1200px" }}>
         <SectionHeader
           eyebrow="Career Outcomes"
           title="500+ Placement Partners"
@@ -175,29 +350,14 @@ export default function Placements({ placements }: PlacementsProps) {
         </div>
 
         <p className="mb-4 text-center text-xs font-semibold uppercase tracking-[0.16em] text-white/70">Our students work at</p>
-        {items.length > 0 ? (
-          <div className="relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
-            <div className="placement-marquee flex w-max items-center gap-3 py-2">
-              {marqueeItems.map((placement, index) => (
-                <article
-                  key={`${placement.id}-${placement.hospital_name}-${index}`}
-                  aria-hidden={index >= items.length}
-                  className="flex min-w-[230px] items-center gap-3 rounded-xl border border-[var(--border-gold)] bg-white px-4 py-3 transition hover:-translate-y-0.5"
-                >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[var(--navy)] to-[var(--navy-light)] text-xs font-bold text-white">
-                    {getInitials(placement.hospital_name)}
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-[var(--text-dark)]">{placement.hospital_name}</p>
-                    <p className="text-xs text-[var(--text-muted)]">{placement.city || "Healthcare Network"}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <p className="text-center text-sm text-white/75">Placement partners will appear here soon.</p>
-        )}
+        <PlacementFlipBoard
+  items={items.map((placement) => ({
+    type: "placement",
+    text: `${placement.hospital_name} • ${
+      placement.city || "Healthcare Network"
+    }`,
+  }))}
+/>
       </div>
     </section>
   );

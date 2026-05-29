@@ -22,6 +22,7 @@ import {
   getTestimonials,
   getVideoTestimonials,
 } from "@/lib/sheets";
+import LivePlacementBoard from "@/components/layout/LivePlacementBoard";
 
 export const revalidate = 600;
 
@@ -53,7 +54,7 @@ export default async function Home() {
         <Associations />
         <FinalCTA courses={courses} />
       </main>
-      <LiveTickerBar />
+      <LivePlacementBoard />
       <Footer courses={courses} />
       <SmartChatWidget counsellorName="Priya" responseTime="5 minutes" />
     </>

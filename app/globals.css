@@ -332,3 +332,70 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* ── Add these to your globals.css ──────────────────────────────────────────── */
+
+/* Cube face positioning — these work with the inline transform on each face */
+.face-front  { position: absolute; inset: 0; }
+.face-right  { position: absolute; inset: 0; }
+.face-back   { position: absolute; inset: 0; }
+.face-left   { position: absolute; inset: 0; }
+
+/* Hero gradient shift animation */
+.hero-gradshift {
+  animation: gradshift 15s ease-in-out infinite;
+  background-size: 200% 200%;
+}
+@keyframes gradshift {
+  0%, 100% { background-position: 0% 50%; }
+  50%       { background-position: 100% 50%; }
+}
+
+/* Floating badge bob */
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-5px); }
+}
+
+/* Health icon animations */
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  14%       { transform: scale(1.2); }
+  28%       { transform: scale(1); }
+  42%       { transform: scale(1.15); }
+}
+.animate-heartbeat {
+  animation: heartbeat 1.8s ease-in-out infinite;
+}
+
+@keyframes bubble {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-4px); }
+}
+.animate-bubble {
+  animation: bubble 2.4s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spin 12s linear infinite;
+}
+
+.flip-card {
+  transform-style: preserve-3d;
+  perspective: 1200px;
+}
+
+.flip-inner {
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+.split-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+  z-index: 5;
+}
